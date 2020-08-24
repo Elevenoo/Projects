@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"/>
+    <title>Health Home</title>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        ul,
+        li {
+            list-style: none;
+        }
+
+        html,
+        body,
+        .login-outter {
+            height: 100%;
+        }
+
+        .wrapper {
+            height: 100%;
+            position: relative;
+        }
+
+        .wrapper .topbar {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            height:10%;
+            color: #fff;
+            font-size:30px;
+            background-color: #275085;
+        }
+
+        @media screen and (max-width: 768px) {
+            .wrapper .topbar {
+                position: absolute;
+                top: 0;
+                width: 100%;
+                height: 39px;
+                color: #fff;
+                font-size:15px;
+                background-color: #275085;
+            }
+
+        }
+
+        .wrapper .footer {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height:10%;
+            color: #fff;
+            font-size:10px;
+            background-color: #275085;
+        }
+
+        @media screen and (max-width: 768px) {
+            .wrapper .footer {
+                position: absolute;
+                bottom: 0;
+                width: 100%;
+                height:55px;
+                color: #fff;
+                font-size:8px;
+                background-color: #275085;
+            }
+        }
+
+        .wrapper .body {
+            height: 100%;
+            padding: 100px 0 80px;
+            background-color: #ccc;
+        }
+
+        @media screen and (max-width: 768px) {
+            .wrapper .body {
+                padding: 150px 0 0;
+            }
+        }
+
+        .layout-center {
+            max-width: 1600px;
+            height:100%;
+            margin: 0 auto;
+            width: 100%;
+            padding:10px;
+            background: rgba(255, 255, 255, 0.6)
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="web-wrap wrapper">
+
+<!--    头部-->
+<div class="topbar">
+    <label class="header-title" style="float:left;margin-top:10px;margin-left:10px">欢迎来到 806数据中心！</label>
+    <div style="float:right;margin-right:75px;margin-top:25px;font-size:12px">
+        <a href="http://localhost:8080/806db.home" target="_blank" style="background: rgba(255, 255, 255, 0.6)">主页/Home</a>
+        <a href="http://localhost:8080/806db.net" target="_blank" style="margin-left:10px;background: rgba(255, 255, 255, 0.6)">退出/Exit</a>
+    </div>
+    <div style = "clear: both"></div>
+</div>
+
+
+<!--    主体-->
+<div class="body">
+    <div class="layout-center">
+        <input type="button" value="刷新" id="submit" onclick="getReport(1)" style="width:100px; height=10px; background: rgba(255, 255, 255, 0.6)"/>
+        <div style="background: rgba(255, 255, 255, 0.6); margin-top:10px;">
+            <label>Diagnosis: </label>
+            <input type="radio" name="diag" value="All" checked="checked">All
+            <input type="radio" name="diag" value="NC" >NC
+            <input type="radio" name="diag" value="SCD">SCD
+            <input type="radio" name="diag" value="MCI">MCI
+            <input type="radio" name="diag" value="AD">AD
+        </div>
+        <div style="background: rgba(255, 255, 255, 0.6); margin-top:10px;">
+            <label>Mode: </label>
+            <input type="checkbox" name="mode" value="fmri">fmri
+            <input type="checkbox" name="mode" value="smri">smri
+            <input type="checkbox" name="mode" value="AV45-PET">AV45-PET
+            <input type="checkbox" name="mode" value="FDG-PET">FDG-PET
+        </div>
+
+        <input type="button" value="下载" id="load" onclick="batchdownload()" style="float:right; margin-right=10px; width:100px; height=10px; background: rgba(255, 255, 255, 0.6)"/>
+        <table width=100% border="1" style="margin-top=10px" id="mytable">
+            <thead>
+            <tr>
+                <th align="center">PID     </th>
+                <th align="center">ExamTime</th>
+                <th align="center">diagnosis</th>
+                <th align="center">Age     </th>
+                <th align="center">Sex     </th>
+                <th align="center">Edu     </th>
+                <th align="center">MMSE    </th>
+                <th align="center">MoCA    </th>
+                <th align="center">fMRI  <input type="checkbox" name="getall" value="fmri" onchange="getall(this)"></th>
+                <th align="center">sMRI  <input type="checkbox" name="getall" value="smri" onchange="getall(this)"></th>
+                <th align="center">AV45-PET  <input type="checkbox" name="getall" value="abetapet" onchange="getall(this)"></th>
+                <th align="center">FDG-PET  <input type="checkbox" name="getall" value="fdgpet" onchange="getall(this)"></th>
+<!--                <th align="center">Batch Load</th>-->
+            </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+
+    </div>
+    <script language="javascript" type="text/javascript">
+
+    function getReport(pageNum){
+        var diagid=document.getElementsByName("diag");
+        var diagnosis=null;
+        if(diagid!=null){
+            for(var i=0;i<diagid.length;i++){
+                if(diagid[i].checked){
+                    diagnosis = diagid[i].value;
+                    break;
+                }
+            }
+        }
+        var fmri="0";
+        var smri="0";
+        var abetapet="0";
+        var fdgpet="0";
+        $("input[name='mode']:checked").each(function(i){
+              if($(this).val()=="fmri") fmri="1";
+              if($(this).val()=="smri") smri="1";
+              if($(this).val()=="AV45-PET") abetapet="1";
+              if($(this).val()=="FDG-PET") fdgpet="1";
+        });
+<!--        alert(pageNum+diagnosis+fmri+smri+abetapet+fdgpet);-->
+        $.ajax({
+           type: "POST",
+           url: "/806db.getimginfors",
+           data:{"pageNum":pageNum,"diagnosis":diagnosis,"fmri":fmri,"smri":smri,"abetapet":abetapet,"fdgpet":fdgpet},
+           dataType: "json",
+<!--           async:false,-->
+           success: function(data){
+              alert("查询成功");
+              var pageInfo = eval(data);//这个可以将字符串转化为变量对象
+              var imginforsList = pageInfo.list;
+              $("#mytable tbody").html("");
+              var tBody = $("#mytable").find("tbody");
+              $.each(imginforsList, function (index) {
+
+                    //新建一行
+                    var newTr = $("<tr></tr>");
+
+                    //新建节点
+
+                    var pidTd = $("<td></td>");
+                    var examtimeTd = $("<td></td>");
+                    var diagnosisTd = $("<td></td>");
+                    var ageTd = $("<td></td>");
+                    var sexTd = $("<td></td>");
+                    var eduTd = $("<td></td>");
+                    var mmseTd = $("<td></td>");
+                    var mocaTd = $("<td></td>");
+                    var fmriTd = $("<td></td>");
+                    var smriTd = $("<td></td>");
+                    var abetapetTd = $("<td></td>");
+                    var fdgpetTd = $("<td></td>");
+
+                    //循环获取数据
+                    pidTd.text(imginforsList[index].pid);
+                    examtimeTd.text(imginforsList[index].examtime);
+                    diagnosisTd.text(imginforsList[index].diagnosis);
+                    ageTd.text(imginforsList[index].age);
+                    sexTd.text(imginforsList[index].sex);
+                    eduTd.text(imginforsList[index].edu);
+                    mmseTd.text(imginforsList[index].mmse);
+                    mocaTd.text(imginforsList[index].moca);
+
+
+                    if(imginforsList[index].fmri=="1"){
+                        var htm = '<input type="submit" onclick="download(\''+imginforsList[index].pid+'\',\''+imginforsList[index].examtime+'\',\''+"fmri"+'\')" value="下载" style="float:left; width:75%; height=80%; background: rgba(255, 255, 255, 0.6)"/>';
+                        htm += '<input type="checkbox" name="batchlist" value="\''+imginforsList[index].pid+'\',\''+imginforsList[index].examtime+'\',\''+"fmri"+'\'"/>'
+                        fmriTd.html(htm);
+                    }else{
+                        fmriTd.text("无");
+                    }
+                    if(imginforsList[index].smri=="1"){
+                        var htm = '<input type="submit" onclick="download(\''+imginforsList[index].pid+'\',\''+imginforsList[index].examtime+'\',\''+"smri"+'\')" value="下载" style="width:75%; height=80%; background: rgba(255, 255, 255, 0.6)"/>';
+                        htm += '<input type="checkbox" name="batchlist" value="\''+imginforsList[index].pid+'\',\''+imginforsList[index].examtime+'\',\''+"smri"+'\'"/>'
+                        smriTd.html(htm);
+                    }else{
+                        smriTd.text("无");
+                    }
+                    if(imginforsList[index].abetapet=="1"){
+                        var htm = '<input type="submit" onclick="download(\''+imginforsList[index].pid+'\',\''+imginforsList[index].examtime+'\',\''+"abetapet"+'\')" value="下载" style="width:75%; height=80%; background: rgba(255, 255, 255, 0.6)"/>';
+                        htm += '<input type="checkbox" name="batchlist" value="\''+imginforsList[index].pid+'\',\''+imginforsList[index].examtime+'\',\''+"abetapet"+'\'"/>'
+                        abetapetTd.html(htm);
+                    }else{
+                        abetapetTd.text("无");
+                    }
+                    if(imginforsList[index].fdgpet=="1"){
+                        var htm = '<input type="submit" onclick="download(\''+imginforsList[index].pid+'\',\''+imginforsList[index].examtime+'\',\''+"fdgpet"+'\')" value="下载" style="width:75%; height=80%; background: rgba(255, 255, 255, 0.6)"/>';
+                        htm += '<input type="checkbox" name="batchlist" value="\''+imginforsList[index].pid+'\',\''+imginforsList[index].examtime+'\',\''+"fdgpet"+'\'"/>'
+                        fdgpetTd.html(htm);
+                    }else{
+                        fdgpetTd.text("无");
+                    }
+
+                    newTr.append(pidTd);
+                    newTr.append(examtimeTd);
+                    newTr.append(diagnosisTd);
+                    newTr.append(ageTd);
+                    newTr.append(sexTd);
+                    newTr.append(eduTd);
+                    newTr.append(mmseTd);
+                    newTr.append(mocaTd);
+                    newTr.append(fmriTd);
+                    newTr.append(smriTd);
+                    newTr.append(abetapetTd);
+                    newTr.append(fdgpetTd);
+
+                    tBody.append(newTr);
+              });
+
+              var newTr = $("<tr></tr>");
+              var fytd = $("<td colspan=12></td>");
+
+              var htm = "<label>当前第"+pageInfo.pageNum+"页, 一共" + pageInfo.pages + "页, 总共" + pageInfo.total + "条记录</label>";
+              if(pageInfo.hasPreviousPage)
+                  htm += '<input type="submit" value="上一页" onclick="getReport(\''+pageInfo.prePage+'\')" style="width:100px; height=10px; background: rgba(255, 255, 255, 0.6)"/>';
+              else
+                  htm += '<input type="submit" value="首页" onclick="getReport(1)" style="width:100px; height=10px; background: rgba(255, 255, 255, 0.6)"/>';
+              if(pageInfo.hasNextPage)
+                  htm += '<input type="submit" value="下一页" onclick="getReport(\''+pageInfo.nextPage+'\')" style="width:100px; height=10px; background: rgba(255, 255, 255, 0.6)"/>';
+              else
+                  htm += '<input type="submit" value="尾页" onclick="getReport(\''+pageInfo.pages+'\')" style="width:100px; height=10px; background: rgba(255, 255, 255, 0.6)"/>';
+
+              fytd.html(htm);
+              newTr.append(fytd);
+              tBody.append(newTr);
+           },
+           error: function (message) {
+               alert("查询失败");
+           }
+        });
+    }
+    function getall(obj){
+        var mode = obj.value;
+<!--        alert(mode);-->
+        var iss=document.getElementsByName("batchlist");
+        for(var i=0;i<iss.length;i++){
+            var st = iss[i].value;
+            if(st.indexOf(mode)!=-1){
+                iss[i].checked=obj.checked;
+            }
+        }
+    }
+    function download(pid,examtime,mode){
+<!--        alert(pid+" "+examtime+" "+mode);-->
+        $.ajax({
+            type: "POST",
+            url: "/806db.download",
+            data:{"pid":pid,"examtime":examtime,"mode":mode},
+            dataType: "json",
+            async:false,
+            success: function(data){
+               alert("开始下载");
+            },
+            error: function (message) {
+               alert("下载失败");
+            }
+        });
+    }
+    function batchdownload(){
+        var arr=[];
+        $("input[name='batchlist']:checked").each(function(i){
+              var st=$(this).val();
+<!--              alert(st);-->
+              arr[i]=st;
+        });
+
+        $.ajax({
+            type: "POST",
+            url: "/806db.batchdownload",
+            data:{"arr[]":arr},
+            dataType: "json",
+            async:false,
+            success: function(data){
+               alert("开始下载");
+            },
+            error: function (message) {
+               alert("下载失败");
+            }
+        });
+    }
+    </script>
+
+</div>
+
+
+
+
+<!--    底部，如果需要在head中定义内联样式，给定class-->
+<div class="footer">
+    <!--         定义居中的内容-->
+    <div style="text-align: center; margin: 10px auto 0;">
+        <div>806数据中心</div>
+        <div>E-mail:liuchunhua0325@163.com</div>
+        <div>Version:1.0v</div>
+    </div>
+</div>
+
+</div>
+
+
+</body>
+
+</html>

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"/>
+    <title>Health Home</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        ul,
+        li {
+            list-style: none;
+        }
+
+        html,
+        body,
+        .login-outter {
+            height: 100%;
+        }
+
+        .wrapper {
+            height: 100%;
+            position: relative;
+        }
+
+        .wrapper .topbar {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            height:10%;
+            color: #fff;
+            font-size:30px;
+            background-color: #275085;
+        }
+
+        @media screen and (max-width: 768px) {
+            .wrapper .topbar {
+                position: absolute;
+                top: 0;
+                width: 100%;
+                height: 39px;
+                color: #fff;
+                font-size:15px;
+                background-color: #275085;
+            }
+
+        }
+
+        .wrapper .footer {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height:10%;
+            color: #fff;
+            font-size:10px;
+            background-color: #275085;
+        }
+
+        @media screen and (max-width: 768px) {
+            .wrapper .footer {
+                position: absolute;
+                bottom: 0;
+                width: 100%;
+                height:55px;
+                color: #fff;
+                font-size:8px;
+                background-color: #275085;
+            }
+        }
+
+        .wrapper .body {
+            height: 100%;
+            padding: 100px 0 80px;
+            background-color: #ccc;
+        }
+
+        @media screen and (max-width: 768px) {
+            .wrapper .body {
+                padding: 150px 0 0;
+            }
+        }
+
+        .layout-center {
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        @media screen and (min-width: 769px) {
+
+            .wrapper .part {
+                width: 100%;
+                max-width: 100%;
+                padding: 30px;
+                text-align: center;
+                display: block;
+                background: rgba(255, 255, 255, 0.6);
+                min-height: 250px;
+                max-height: 300px;
+                border-left: 3px solid #275085;
+                border-right: 3px solid #275085;
+                border-top: 3px solid #275085;
+                border-bottom: 3px solid #275085;
+                float:left;
+                margin-left: 1%;
+                margin-top:3%;
+            }
+
+            .wrapper .subpart {
+                width: 100%;
+                max-width: 45%;
+                padding: 30px;
+                text-align: center;
+                display: block;
+                background: rgba(255, 255, 255, 0.6);
+                min-height: 200px;
+                max-height: 240px;
+                border-left: 1px solid #275085;
+                border-right: 1px solid #275085;
+                border-top: 1px solid #275085;
+                border-bottom: 1px solid #275085;
+<!--                float:left;-->
+<!--                margin-left: 1%;-->
+                margin-top:1%;
+            }
+
+            .wrapper .subpart2 {
+                width: 100%;
+                max-width: 23%;
+                padding: 30px;
+                text-align: center;
+                display: block;
+                background: rgba(255, 255, 255, 0.6);
+                min-height: 200px;
+                max-height: 240px;
+                border-left: 1px solid #275085;
+                border-right: 1px solid #275085;
+                border-top: 1px solid #275085;
+                border-bottom: 1px solid #275085;
+<!--                float:left;-->
+<!--                margin-left: 1%;-->
+                margin-top:25%;
+            }
+
+        }
+
+
+    </style>
+</head>
+
+<body>
+
+<div class="web-wrap wrapper">
+
+    <!--    头部-->
+    <div class="topbar">
+        <label class="header-title" style="float:left;margin-top:10px;margin-left:10px">欢迎来到 806数据中心！</label>
+        <div style="float:right;margin-right:75px;margin-top:25px;font-size:12px">
+            <a href="http://localhost:8080/806db.home" target="_blank" style="background: rgba(255, 255, 255, 0.6)">主页/Home</a>
+            <a href="http://localhost:8080/806db.net" target="_blank" style="margin-left:10px;background: rgba(255, 255, 255, 0.6)">退出/Exit</a>
+        </div>
+        <div style = "clear: both"></div>
+    </div>
+
+
+    <!--    主体-->
+    <div class="body">
+        <form action="806db.reportImginfos" method="post">
+            <input type="submit" style="float:right;margin-right:2%" value="提交">
+            <div class="layout-center">
+            <div class="part">
+                <div class="subpart" style="float:left;margin-left:1%">
+                    <label style="text-align: center;">人口信息</label>
+                    <div style=" margin-top:1%;margin-left:1%">
+                        <label>PID:</label>
+                        <input type="text" name="pid" placeholder="请输入被试PID编号"/>
+                    </div>
+                    <div style=" margin-top:1%;margin-left:1%">
+                        <label>ExamTime:</label>
+                        <input type="date" name="examtime" placeholder="请输入被试检查日期xxxx-xx-xx"/>
+                    </div>
+                    <div style=" margin-top:1%;margin-left:1%">
+                        <label>Diagnosis:</label>
+                        <input type="radio" name="diagnosis" value="NC" checked="checked"/>NC
+                        <input type="radio" name="diagnosis" value="SCD" />SCD
+                        <input type="radio" name="diagnosis" value="MCI" />MCI
+                        <input type="radio" name="diagnosis" value="AD" />AD
+                    </div>
+                    <div style=" margin-top:1%;margin-left:1%">
+                        <label>Age:</label>
+                        <input type="text" name="age" placeholder="请输入被试年龄"/>
+                    </div>
+                    <div style=" margin-top:1%;margin-left:1%">
+                        <label>Sex:</label>
+                        <input type="radio" name="sex" value="男" checked="checked"/>男
+                        <input type="radio" name="sex" value="女" />女
+                    </div>
+                </div>
+                <div class="subpart" style="float:right;margin-right:1%">
+                    <label style="text-align: center;">认知量表</label>
+                    <div style=" margin-top:1%;margin-left:1%">
+                        <label>Educational years:</label>
+                        <input type="text" name="edu" placeholder="请输入被试受教育年限"/>
+                    </div>
+                    <div style=" margin-top:1%;margin-left:1%">
+                        <label>MMSE:</label>
+                        <input type="text" name="mmse" placeholder="请输入被试MMSE得分"/>
+                    </div>
+                    <div style=" margin-top:1%;margin-left:1%">
+                        <label>MoCA:</label>
+                        <input type="text" name="moca" placeholder="请输入被试MoCA得分"/>
+                    </div>
+                </div>
+            </div>
+            <div class="part">
+                <div class="subpart2" style="float:left;margin-left:1%">
+                    <label>上传fMRI数据</label>
+                    <input type="file" name="uploadfmri" id="uploadfmri" οnchange="document.getElementById('uploadfmri').value=this.value" />
+                </div>
+                <div class="subpart2" style="float:left;margin-left:1%">
+                    <label>上传sMRI数据</label>
+                    <input type="file" name="uploadsmri" id="uploadsmri" οnchange="document.getElementById('uploadsmri').value=this.value" />
+                </div>
+                <div class="subpart2" style="float:right;margin-right:1%">
+                    <label>上传FDG-PET数据</label>
+                    <input type="file" name="uploadfdgpet" id="uploadfdgpet" οnchange="document.getElementById('uploadfdgpet').value=this.value" />
+                </div>
+                <div class="subpart2" style="float:right;margin-right:1%">
+                    <label>上传AV45-PET数据</label>
+                    <input type="file" name="uploadabetapet" id="uploadabetapet" οnchange="document.getElementById('uploadabetapet').value=this.value" />
+                </div>
+            </div>
+            <div style = "clear: both"></div>
+        </div>
+        </form>
+    </div>
+
+
+    <!--    底部，如果需要在head中定义内联样式，给定class-->
+    <div class="footer">
+        <!--         定义居中的内容-->
+        <div style="text-align: center; margin: 10px auto 0;">
+            <div>806数据中心</div>
+            <div>E-mail:liuchunhua0325@163.com</div>
+            <div>Version:1.0v</div>
+        </div>
+    </div>
+
+</div>
+
+
+</body>
+
+</html>
